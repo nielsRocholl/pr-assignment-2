@@ -1,6 +1,7 @@
 import cv2
 import os
 from tqdm import tqdm
+import numpy as np
 
 
 class FeatureExtractor:
@@ -26,13 +27,17 @@ class FeatureExtractor:
 
     def __extract_features(self):
         processed_dataset = {}
-        image_list = []
         # detect features from the image
         print("Extracting SIFT Features:")
         for c in tqdm(self.grey_dataset):
+            image_list = []
             for idx, image in enumerate(self.grey_dataset[c]):
+                # keypoint holds the
                 keypoints, descriptors = self.__sift.detectAndCompute(image, None)
                 image_list.append([keypoints, descriptors])
+                # print(f'features: {len(descriptors[1])}')
+                # print(f'features: {descriptors.shape[0]}')
+
             processed_dataset[c] = image_list
         print("Features successfully extracted")
         return processed_dataset
@@ -42,6 +47,16 @@ class FeatureExtractor:
         for c in self.original_dataset:
             grey_images[c] = [cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) for image in self.original_dataset[c]]
         return grey_images
+
+    def __clean_features(self):
+        num_of_descriptors = 50
+        cleaned_features = {}
+        for c in self.processed_dataset:
+            samples = []
+            for keypoints, descriptors in c:
+                descriptor_subsets = descriptors[np.random.randint(descriptors.shape[0], size=num_of_descriptors)]
+                samples.append(descriptor_subsets)
+            cleaned_features[c] = samples
 
 
 f = FeatureExtractor()
