@@ -31,7 +31,7 @@ class FeatureExtractor:
         # detect features from the image
         print("Extracting SIFT Features:")
         for c in tqdm(self.grey_dataset):
-            for idx, image in enumerate(self.grey_dataset[c]):
+            for _, image in enumerate(self.grey_dataset[c]):
                 keypoints, descriptors = self.__sift.detectAndCompute(image, None)
                 image_list.append([keypoints, descriptors])
             processed_dataset[c] = image_list
@@ -49,7 +49,7 @@ class FeatureExtractor:
         cleaned_features = {}
         for c in self.processed_dataset:
             samples = []
-            for keypoints, descriptors in c:
+            for keypoints, descriptors in self.processed_dataset[c]:
                 descriptor_subsets = descriptors[np.random.randint(descriptors.shape[0], size=num_of_descriptors)]
                 samples.append(descriptor_subsets)
             cleaned_features[c] = samples
