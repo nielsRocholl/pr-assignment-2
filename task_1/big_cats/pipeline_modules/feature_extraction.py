@@ -12,6 +12,7 @@ class FeatureExtractor:
         self.original_dataset = self.__load_dataset()
         self.grey_dataset = self.__convert_to_greyscale()
         self.processed_dataset = self.__extract_features()
+        self.cleaned_feature_dataset = self.__clean_features()
 
     def __load_dataset(self):
         os.chdir(f'{os.path.split(__file__)[0]}{os.sep}..{os.sep}..')
@@ -49,10 +50,9 @@ class FeatureExtractor:
         cleaned_features = {}
         for c in self.processed_dataset:
             samples = []
-            for keypoints, descriptors in c:
+            for keypoints, descriptors in self.processed_dataset[c]:
                 descriptor_subsets = descriptors[np.random.randint(descriptors.shape[0], size=num_of_descriptors)]
                 samples.append(descriptor_subsets)
             cleaned_features[c] = samples
-        print(cleaned_features)
-
+        return cleaned_features
 
