@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 class FeatureExtractor:
     def __init__(self):
-        self.__path_data = 'data/BigCats/'
+        self.__path_data = f'data{os.sep}BigCats{os.sep}'
         # create SIFT feature extractor
         self.__sift = cv2.SIFT_create()
         self.original_dataset = self.__load_dataset()
@@ -13,14 +13,14 @@ class FeatureExtractor:
         self.processed_dataset = self.__extract_features()
 
     def __load_dataset(self):
-        os.chdir(f'{os.path.split(__file__)[0]}/../..')
+        os.chdir(f'{os.path.split(__file__)[0]}{os.sep}..{os.sep}..')
         # retrieve class labels (and clean the list)
-        classes = list(filter(None, [x[0].replace('data/BigCats/', '') for x in os.walk(self.__path_data)]))
+        classes = list(filter(None, [x[0].replace(f'data{os.sep}BigCats', '') for x in os.walk(self.__path_data)]))
 
         dataset = {}
         for c in classes:
-            filenames = next(os.walk(f'{self.__path_data}/{c}'), (None, None, []))[2]
-            dataset[c] = [cv2.imread(f'{self.__path_data}/{c}/{img}') for img in filenames]
+            filenames = next(os.walk(f'{self.__path_data}{os.sep}{c}'), (None, None, []))[2]
+            dataset[c] = [cv2.imread(f'{self.__path_data}{os.sep}{c}{os.sep}{img}') for img in filenames]
         print("Dataset successfully loaded")
         return dataset
 
