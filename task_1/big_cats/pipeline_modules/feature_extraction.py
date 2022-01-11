@@ -1,6 +1,7 @@
 import cv2
 import os
 from tqdm import tqdm
+import numpy as np
 
 
 class FeatureExtractor:
@@ -43,5 +44,13 @@ class FeatureExtractor:
             grey_images[c] = [cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) for image in self.original_dataset[c]]
         return grey_images
 
-
-f = FeatureExtractor()
+    def __clean_features(self):
+        num_of_descriptors = 50
+        cleaned_features = {}
+        for c in self.processed_dataset:
+            samples = []
+            for keypoints, descriptors in c:
+                descriptor_subsets = descriptors[np.random.randint(descriptors.shape[0], size=num_of_descriptors)]
+                samples.append(descriptor_subsets)
+            cleaned_features[c] = samples
+        print(cleaned_features)
