@@ -54,5 +54,6 @@ class FeatureExtractor:
                 descriptor_subsets = descriptors[np.random.randint(descriptors.shape[0], size=num_of_descriptors)]
                 samples.append(descriptor_subsets)
             cleaned_features[c] = samples
+        print(f'Features successfully cleaned. Num of descriptors per image: {num_of_descriptors}')
         return cleaned_features
 
