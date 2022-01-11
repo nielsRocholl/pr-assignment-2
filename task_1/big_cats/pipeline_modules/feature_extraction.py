@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 class FeatureExtractor:
     def __init__(self):
-        self.__path_data = 'datagit BigCats/'
+        self.__path_data = 'data/BigCats/'
         # create SIFT feature extractor
         self.__sift = cv2.SIFT_create()
         self.original_dataset = self.__load_dataset()
