@@ -16,7 +16,7 @@ class FeatureExtractor:
     def __load_dataset(self):
         os.chdir(f'{os.path.split(__file__)[0]}{os.sep}..{os.sep}..')
         # retrieve class labels (and clean the list)
-        classes = list(filter(None, [x[0].replace(f'data{os.sep}BigCats', '') for x in os.walk(self.__path_data)]))
+        classes = list(filter(None, [x[0].replace(f'data{os.sep}BigCats{os.sep}', '') for x in os.walk(self.__path_data)]))
 
         dataset = {}
         for c in classes:
@@ -54,3 +54,5 @@ class FeatureExtractor:
                 samples.append(descriptor_subsets)
             cleaned_features[c] = samples
         print(cleaned_features)
+
+
