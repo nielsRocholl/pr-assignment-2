@@ -1,3 +1,5 @@
+import sys
+
 import cv2
 import os
 from tqdm import tqdm
@@ -18,6 +20,8 @@ class FeatureExtractor:
         os.chdir(f'{os.path.split(__file__)[0]}{os.sep}..{os.sep}..')
         # retrieve class labels (and clean the list)
         classes = list(filter(None, [x[0].replace(f'data{os.sep}BigCats{os.sep}', '') for x in os.walk(self.__path_data)]))
+        if not classes:
+            sys.exit("Data could not be loaded, most likely a path mismatch")
 
         dataset = {}
         for c in classes:
