@@ -71,9 +71,13 @@ class FeatureExtractor:
 
                 for d in des:
                     descriptor_list.append(d)
+        if not os.path.exists(f'{self.__model_path}'):
+            # Create a new directory because it does not exist
+            os.makedirs(f'{self.__model_path}')
         dump(descriptor_list, f'{self.__model_path}/sift_keypoints.joblist')
         print('Feature list successfully created')
         return descriptor_list
+
 
     # def __extract_features(self):
     #     processed_dataset = {}

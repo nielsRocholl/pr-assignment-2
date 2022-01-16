@@ -1,5 +1,5 @@
 from pipeline_modules.feature_extraction import FeatureExtractor
-from task_1.big_cats.pipeline_modules.clustering import Clustering
+from pipeline_modules.clustering import Clustering
 
 
 def main():
@@ -7,7 +7,7 @@ def main():
     f = FeatureExtractor()
     c = Clustering(f.descriptor_list, f.num_of_samples, f.grey_dataset_flat_list, f.sift)
 
-    print(c.bag_of_words[10].sum())
+    # print(c.bag_of_words[10].sum())
 
 
 if __name__ == '__main__':
