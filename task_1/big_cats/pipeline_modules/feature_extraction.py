@@ -47,10 +47,11 @@ class FeatureExtractor:
         Converts all images in the raw dataset into greyscale, since sift operates on greyscale
         :return: dictionary holding the transformed greyscale dataset
         """
+
         grey_images = {}
         grey_images_flat_list = []
-        for c in self.original_dataset:
-            grey_images[c] = [cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) for image in self.original_dataset[c]]
+        for class_label, c in enumerate(self.original_dataset):
+            grey_images[c] = [[cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), class_label] for image in self.original_dataset[c]]
             grey_images_flat_list.append(grey_images[c])
         grey_images_flat_list = [item for sublist in grey_images_flat_list for item in sublist]
 
@@ -66,7 +67,7 @@ class FeatureExtractor:
             return load(f'{self.__model_path}/sift_keypoints.joblist')
         else:
             descriptor_list = []
-            for image in tqdm(self.grey_dataset_flat_list):
+            for image, label in tqdm(self.grey_dataset_flat_list):
                 kp, des = self.sift.detectAndCompute(image, None)
 
                 for d in des:
