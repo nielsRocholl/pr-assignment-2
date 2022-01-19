@@ -15,7 +15,7 @@ def main():
     # shuffle data
     random.shuffle(data)
     # create fold
-    kf = KFold(n_splits=5, random_state=None)
+    kf = KFold(n_splits=4, random_state=None)
     for fold, (train_index, test_index) in enumerate(kf.split(data)):
         data_train, data_test = np.array(data, dtype=object)[train_index, :], np.array(data, dtype=object)[test_index, :]
         # use features to train knn
@@ -30,7 +30,7 @@ def main():
         clf = svm.NuSVC()
         clf.fit(x, y)
         # knn
-        neigh = KNeighborsClassifier(n_neighbors=3)
+        neigh = KNeighborsClassifier(n_neighbors=10)
         neigh.fit(x, y)
         # perform testing
         acc_svm = 0

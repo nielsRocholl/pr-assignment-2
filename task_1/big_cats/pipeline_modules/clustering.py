@@ -15,7 +15,7 @@ def k_means(data, num_of_classes):
     k = num_of_classes * 10
     batch_size = np.size(len(data)) * 3
     print("Calculating kmeans. This might take a minute")
-    kmeans = MiniBatchKMeans(n_clusters=k, batch_size=batch_size, verbose=0).fit(descriptor_list)
+    kmeans = MiniBatchKMeans(n_clusters=k, verbose=0).fit(descriptor_list)
     print("Kmeans successfully created")
     return kmeans
 
