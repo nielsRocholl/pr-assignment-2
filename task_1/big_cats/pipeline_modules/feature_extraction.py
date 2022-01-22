@@ -1,7 +1,11 @@
+import random
 import sys
+
 from tqdm import tqdm
 import cv2
 import os
+
+
 
 
 def load_dataset():
@@ -25,7 +29,6 @@ def load_dataset():
     dataset = __convert_to_greyscale(dataset)
     # load features
     dataset = __extract_features(dataset)
-    print("Dataset successfully loaded")
     return dataset
 
 
@@ -36,8 +39,10 @@ def __convert_to_greyscale(dataset):
     """
     greyscale_dataset = []
     for image, label in dataset:
-        greyscale_dataset.append([cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), label])
-
+        try:
+            greyscale_dataset.append([cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), label])
+        except Exception as e:
+            print('')
     return greyscale_dataset
 
 
@@ -48,9 +53,10 @@ def __extract_features(dataset):
     """
     sift = cv2.SIFT_create()
     feature_dataset = []
+    print('Loading data:')
     for image, label in tqdm(dataset):
         kp, des = sift.detectAndCompute(image, None)
+        # des = random.sample(list(des), 245)
         feature_dataset.append([des, kp, label])
 
-    print('Feature list successfully created')
     return feature_dataset
