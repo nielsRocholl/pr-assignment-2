@@ -13,7 +13,7 @@ def k_means(data, num_of_classes):
             descriptor_list.append(d)
 
     k = num_of_classes * 10
-    batch_size = np.size(len(data)) * 3
+
     print("Calculating kmeans. This might take a minute")
     kmeans = MiniBatchKMeans(n_clusters=k, verbose=0).fit(descriptor_list)
     print("Kmeans successfully created")
@@ -32,7 +32,6 @@ def bag_of_words(kmeans, data, num_of_classes):
     hist_list = []
 
     for des, kp, label in data:
-
         hist = np.zeros(k)
         nkp = np.size(kp)
 
@@ -41,5 +40,6 @@ def bag_of_words(kmeans, data, num_of_classes):
             hist[idx] += 1 / nkp  # Because we need normalized histograms, I prefere to add 1/nkp directly
 
         hist_list.append([hist, label])
+        
     print("Histogram successfully created")
     return hist_list

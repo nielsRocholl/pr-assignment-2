@@ -8,14 +8,15 @@ from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import KFold
 
+random.seed(0)
 
-def main():
+def main(splits):
     # Classification pipeline:
     data = load_dataset()
     # shuffle data
     random.shuffle(data)
     # create fold
-    kf = KFold(n_splits=4, random_state=None)
+    kf = KFold(n_splits=splits, random_state=None)
     for fold, (train_index, test_index) in enumerate(kf.split(data)):
         data_train, data_test = np.array(data, dtype=object)[train_index, :], np.array(data, dtype=object)[test_index, :]
         # use features to train knn
@@ -39,6 +40,7 @@ def main():
         for hist, c in bow_test:
             pred_svm = clf.predict([hist])
             pred_knn = neigh.predict([hist])
+            print(pred_svm[0])
             # print(f'pred_svm: {pred_svm}, pred knn: {pred_knn}, real class: {c}')
             if pred_svm[0] == c:
                 acc_svm += 1
@@ -48,4 +50,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    splits = 10
+    main(splits)

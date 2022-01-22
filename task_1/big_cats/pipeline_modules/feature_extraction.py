@@ -20,10 +20,10 @@ def load_dataset():
     for c in classes:
         filenames = next(os.walk(f'{path_data}{os.sep}{c}'), (None, None, []))[2]
         dataset += [[cv2.imread(f'{path_data}{os.sep}{c}{os.sep}{img}'), classes.index(c)] for img in filenames]
-
+    
     # turn into greyscale:
     dataset = __convert_to_greyscale(dataset)
-    # load features
+    # extract features
     dataset = __extract_features(dataset)
     print("Dataset successfully loaded")
     return dataset
