@@ -9,7 +9,7 @@ import os
 def load_dataset():
     """
     load original dataset from data/BigCats
-    :return: a dictionary holding the entire raw dataset: {'Lion: [img_0,...,img_x], ...}
+    :return: a list containing the bag of words model and the associated labels
     """
     path_data = f'data{os.sep}BigCats{os.sep}'
     os.chdir(f'{os.path.split(__file__)[0]}{os.sep}..{os.sep}..')
@@ -33,7 +33,7 @@ def load_dataset():
 def __convert_to_greyscale(dataset):
     """
     Converts all images in the raw dataset into greyscale, since sift operates on greyscale
-    :return: dictionary holding the transformed greyscale dataset
+    :return: a list containing all greyscale images and the associated labels
     """
     greyscale_dataset = []
     for image, label in dataset:

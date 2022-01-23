@@ -4,7 +4,7 @@ from sklearn.cluster import MiniBatchKMeans, Birch
 
 def k_means(data, num_of_classes):
     """
-    Loads the kmeans model if it exists, else it creates the model
+    Create a kmeans model based on all sift features
     :return: kmeans model
     """
     descriptor_list = []
@@ -18,8 +18,8 @@ def k_means(data, num_of_classes):
 
 def birch(data, num_of_classes):
     """
-    Loads the kmeans model if it exists, else it creates the model
-    :return: kmeans model
+    Create a birch model based on all sift features
+    :return: birch model
     """
     descriptor_list = []
     for features in data:
@@ -32,7 +32,6 @@ def birch(data, num_of_classes):
 
 def bag_of_words(kmeans, data, num_of_classes):
     """
-    Loads the histogram list (bag of (visual) words) if it exists, else it creates the bag of words.
     Every histogram should sum to 1, i.e. every entry represents the frequency of that particular descriptor
     :return: list of histograms, (bag of words)
     """
