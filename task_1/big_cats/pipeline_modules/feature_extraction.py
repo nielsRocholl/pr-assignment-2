@@ -6,8 +6,6 @@ import cv2
 import os
 
 
-
-
 def load_dataset():
     """
     load original dataset from data/BigCats
@@ -42,7 +40,7 @@ def __convert_to_greyscale(dataset):
         try:
             greyscale_dataset.append([cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), label])
         except Exception as e:
-            print('')
+            pass
     return greyscale_dataset
 
 
@@ -56,7 +54,7 @@ def __extract_features(dataset):
     print('Loading data:')
     for image, label in tqdm(dataset):
         kp, des = sift.detectAndCompute(image, None)
-        # des = random.sample(list(des), 245)
-        feature_dataset.append([des, kp, label])
+        des = random.sample(list(des), 245)
+        feature_dataset.append([des, 245, label])
 
     return feature_dataset

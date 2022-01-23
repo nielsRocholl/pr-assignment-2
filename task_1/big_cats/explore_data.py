@@ -33,6 +33,7 @@ dataset = np.zeros(len(classes))
 for idx, c in enumerate(classes):
     filenames = next(os.walk(f'{path_data}{os.sep}{c}'), (None, None, []))[2]
     dataset[idx] = len(filenames)
+print(dataset)
 
 plt.grid()
 plt.bar(classes, dataset)
@@ -42,7 +43,7 @@ plt.title('Data Distribution')
 plt.savefig('results/data_dist.png')
 plt.show()
 
-df = pd.read_csv('results/big_cats_results_kmeans_capped.csv')
+df = pd.read_csv('results/big_cats_accuracy.csv')
 print(df.mean())
 
 
