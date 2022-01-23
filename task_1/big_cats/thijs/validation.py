@@ -1,9 +1,8 @@
-
 import random
-random.seed(0)
 
 class K_folds:
     def __init__(self, data, k=10):
+        random.seed(0)
         self.cur_fold = 0
         random.shuffle(data)
         self.fold = [[dp for dp in data[idx::k]] for idx in range(k)]
