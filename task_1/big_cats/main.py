@@ -1,31 +1,70 @@
 #!/bin/python3
-
-
-from pipeline_modules.feature_extraction import FeatureExtractor
-from pipeline_modules.clustering import Clustering
-from sklearn import svm
+import os
+import random
 import numpy as np
+import pandas as pd
+from sklearn.metrics import accuracy_score
+from sklearn.svm import NuSVC
+
+from tqdm import tqdm
+from pipeline_modules.feature_extraction import load_dataset
+from pipeline_modules.clustering import k_means, bag_of_words, birch
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import KFold
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 def main():
+    random.seed()
     # Classification pipeline:
-    f = FeatureExtractor()
-    c = Clustering(f.descriptor_list, f.num_of_samples, f.grey_dataset_flat_list, f.sift)
-
-    x = [i[0] for i in c.bag_of_words]
-    y = [i[1] for i in c.bag_of_words]
-    print(np.shape(x), np.shape(y))
-    clf = svm.NuSVC()
-    clf.fit(x, y)
-    acc = 0
-    for hist, c in c.bag_of_words:
-        pred = clf.predict([hist])
-        print(f'pred: {pred}, real class: {c}')
-        if pred[0] == c:
-            acc += 1
-    print(f'final: {acc/len(y)}')
-
-    # print(c.bag_of_words[10].sum())
+    data = load_dataset()
+    # shuffle data
+    random.shuffle(data)
+    # create fold
+    kf = KFold(n_splits=10, random_state=None)
+    # create dict to store results
+    results = {}
+    # create all classifiers
+    classifiers = [
+        LinearDiscriminantAnalysis(),
+        NuSVC(),
+        KNeighborsClassifier(n_neighbors=10)
+    ]
+    # create all clustering methods
+    clustering_methods = [
+        k_means,
+        birch
+    ]
+    for fold, (train_index, test_index) in tqdm(enumerate(kf.split(data))):
+        data_train, data_test = np.array(data, dtype=object)[train_index, :], np.array(data, dtype=object)[test_index,:]
+        for clustering_method in clustering_methods:
+            # use features to train knn
+            features = [i[0] for i in data_train]
+            clustering_method = clustering_method(data=features, num_of_classes=5)
+            # calculate bag of words representation
+            bow_train = bag_of_words(kmeans=clustering_method, data=data_train, num_of_classes=5)
+            # retrieve x and y to train classifier
+            x = [i[0] for i in bow_train]  # histogram
+            y = [i[1] for i in bow_train]  # label
+            # perform testing
+            bow_test = bag_of_words(kmeans=clustering_method, data=data_test, num_of_classes=5)
+            for clf in classifiers:
+                # train, predict and calculate accuracy
+                clf.fit(x, y)
+                pred = clf.predict([i[0] for i in bow_test])
+                acc = accuracy_score([i[1] for i in bow_test], pred)
+                # add results to dictionary
+                clf_name = clf.__class__.__name__
+                clustering_method_name = clustering_method.__class__.__name__
+                if f'{clf_name} + {clustering_method_name}' in results:
+                    results[f'{clf_name} + {clustering_method_name}'].append(acc)
+                else:
+                    results[f'{clf_name} + {clustering_method_name}'] = [acc]
+    # save results to file
+    df = pd.DataFrame(results)
+    df.index.name = 'Fold'
+    pd.DataFrame(results).to_csv('results/big_cats_accuracy.csv')
+    print('Results written to file: big_cats_accuracy.csv')
 
 
 if __name__ == '__main__':
