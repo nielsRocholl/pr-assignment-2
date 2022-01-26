@@ -78,7 +78,7 @@ def __extract_features(dataset):
     print('Loading data:')
     for image, label in tqdm(dataset):
         kp, des = sift.detectAndCompute(image, None)
-        des = random.sample(list(des), 10)
-        feature_dataset.append([des, 10, label])
+        des = random.sample(list(des), 245)
+        feature_dataset.append([des, 245, label])
 
     return feature_dataset
