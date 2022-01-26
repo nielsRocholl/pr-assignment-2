@@ -1,35 +1,14 @@
-from operator import index
 import os
-from pickletools import float8
 from typing import Tuple
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.semi_supervised import LabelPropagation
 from sklearn.metrics import fbeta_score
-import scipy.stats as stats
 
 #import logistic regression from sklearn
 from sklearn.linear_model import LogisticRegression
-
-from linear_regression import LinearRegression
-
-from matplotlib import pyplot as plt
-
-def plot_distributions(results_1, results_2):
-    results = [results_1, results_2]
-    plt.hist(results[0], bins=100, alpha=0.5, label="0", density=True)
-    plt.hist(results[1], bins=100, alpha=0.5, label="1", density=True)
-    mu = np.mean(results[0])
-    sigma = np.sqrt(np.var(results[0]))
-    x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
-    plt.plot(x, stats.norm.pdf(x, mu, sigma))
-    mu = np.mean(results[1])
-    sigma = np.sqrt(np.var(results[1]))
-    x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
-    plt.plot(x, stats.norm.pdf(x, mu, sigma))
-    plt.show()
-
 
 def represent_classes_equally(df: pd.DataFrame) -> pd.DataFrame:
     # Make training set represent each class equally
@@ -79,7 +58,7 @@ def baseline_method(train: pd.DataFrame, test: pd.DataFrame) -> None:
 
 def semi_supervised_method(train_labeled: pd.DataFrame, train_unlabeled: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     # Use KNN for label propagation
-    label_prop = LabelPropagation(kernel="knn", gamma=0.1, n_neighbors=20, n_jobs=-1).fit(train_labeled, train_labeled['Class'])
+    label_prop = LabelPropagation(kernel="knn", n_neighbors=20, n_jobs=-1).fit(train_labeled, train_labeled['Class'])
 
     # Predict the labels of the unlabeled data and add them to the labeled data
     train_unlabeled.assign(Class=label_prop.predict(train_unlabeled))
@@ -109,7 +88,7 @@ def main():
 if __name__=="__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     f2 = {'base': [], 'semi_supervised': []}
-    for idx in range(20):
+    for idx in range(100):
         f2_base, f2_semi_supervised = main()
         f2['base'].append(f2_base)
         f2['semi_supervised'].append(f2_semi_supervised)
