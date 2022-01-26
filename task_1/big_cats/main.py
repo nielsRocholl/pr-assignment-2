@@ -68,7 +68,7 @@ def main():
     # save results to file
     df = pd.DataFrame(results)
     df.index.name = 'Fold'
-    # pd.DataFrame(results).to_csv('results/big_cats_accuracy.csv')
+    pd.DataFrame(results).to_csv('results/big_cats_accuracy.csv')
     print('Results written to file: big_cats_accuracy.csv')
 
 
