@@ -1,12 +1,28 @@
 import random
 import sys
+import numpy as np
 
 from tqdm import tqdm
 import cv2
 import os
 
+from skimage.util import random_noise
+from skimage import img_as_ubyte
 
-def load_dataset():
+
+def __augment(img):
+    options = [
+        'gaussian',
+        'poisson',
+        's&p',
+    ]
+    option = random.choice(options)
+    noise_img = (random_noise(img, mode=option))
+    noise_img = img_as_ubyte(noise_img)
+    return np.array(noise_img)
+
+
+def load_dataset(augment=False):
     """
     load original dataset from data/BigCats
     :return: a list containing the bag of words model and the associated labels
@@ -21,12 +37,19 @@ def load_dataset():
     dataset = []
     for c in classes:
         filenames = next(os.walk(f'{path_data}{os.sep}{c}'), (None, None, []))[2]
-        dataset += [[cv2.imread(f'{path_data}{os.sep}{c}{os.sep}{img}'), classes.index(c)] for img in filenames]
-
+        # Mac os creates this file.
+        filenames.remove('.DS_Store')
+        for img in filenames:
+            image = cv2.imread(f'{path_data}{os.sep}{c}{os.sep}{img}')
+            dataset.append([image, classes.index(c)])
+            # augment data
+            if random.random() < 0.2 and augment:
+                dataset.append([__augment(image), classes.index(c)])
     # turn into greyscale:
     dataset = __convert_to_greyscale(dataset)
     # load features
     dataset = __extract_features(dataset)
+
     return dataset
 
 
@@ -40,7 +63,8 @@ def __convert_to_greyscale(dataset):
         try:
             greyscale_dataset.append([cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), label])
         except Exception as e:
-            pass
+            print(e)
+
     return greyscale_dataset
 
 
@@ -54,7 +78,7 @@ def __extract_features(dataset):
     print('Loading data:')
     for image, label in tqdm(dataset):
         kp, des = sift.detectAndCompute(image, None)
-        des = random.sample(list(des), 245)
-        feature_dataset.append([des, 245, label])
+        des = random.sample(list(des), 10)
+        feature_dataset.append([des, 10, label])
 
     return feature_dataset
