@@ -22,4 +22,4 @@ Results are written to the screen and also to the folder data/.
 
 **Gene Pipeline**
 
-Add instructions here...
+Execute the steps in the notebook
