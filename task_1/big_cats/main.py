@@ -1,4 +1,5 @@
 #!/bin/python3
+import os
 import random
 import numpy as np
 import pandas as pd
@@ -34,12 +35,9 @@ def main():
         k_means,
         birch
     ]
-    print(f'\nnumber of samples: {len(data)}')
     for fold, (train_index, test_index) in tqdm(enumerate(kf.split(data))):
         data_train, data_test = np.array(data, dtype=object)[train_index, :], np.array(data, dtype=object)[test_index,:]
-        print("hit k fold")
         for clustering_method in clustering_methods:
-            print('hit clustering')
             # use features to train knn
             features = [i[0] for i in data_train]
             clustering_method = clustering_method(data=features, num_of_classes=5)
@@ -51,7 +49,6 @@ def main():
             # perform testing
             bow_test = bag_of_words(kmeans=clustering_method, data=data_test, num_of_classes=5)
             for clf in classifiers:
-                print('hit classifier')
                 # train, predict and calculate accuracy
                 clf.fit(x, y)
                 pred = clf.predict([i[0] for i in bow_test])
@@ -68,8 +65,9 @@ def main():
     # save results to file
     df = pd.DataFrame(results)
     df.index.name = 'Fold'
-    pd.DataFrame(results).to_csv('results/big_cats_accuracy.csv')
-    print('Results written to file: big_cats_accuracy.csv')
+    filename = 'big_cats_accuracy'
+    # pd.DataFrame(results).to_csv(f'results{os.sep}{filename}.csv')
+    print(f'Results written to file: {filename}.csv')
 
 
 if __name__ == '__main__':

@@ -46,6 +46,8 @@ plt.show()
 df = pd.read_csv(f'..{os.sep}results{os.sep}big_cats_accuracy.csv')
 df2 = pd.read_csv(f'..{os.sep}results{os.sep}big_cats_accuracy_augmented.csv')
 
+
+
 print(df.mean())
 print(df2.mean())
 
