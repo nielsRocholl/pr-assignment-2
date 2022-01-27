@@ -4,7 +4,7 @@ https://www.overleaf.com/3677423679tvgqqpxdgrxg
 
 ### **How to run**
 
-The image classification pipeline has been implemented in python. The Gene pipeline has been
+The image classification pipeline from task 1 and task 2 have been implemented in python. The Gene pipeline has been
 implemented in a python notebook. 
 
 **Image Classification pipeline**
