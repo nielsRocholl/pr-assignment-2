@@ -2,13 +2,14 @@ import os
 from typing import Tuple
 
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.semi_supervised import LabelPropagation
 from sklearn.metrics import fbeta_score
-
-#import logistic regression from sklearn
 from sklearn.linear_model import LogisticRegression
+
+from result_processing import plot_results, write_results
+
+N_NEIGHBOURS = 3
 
 def represent_classes_equally(df: pd.DataFrame) -> pd.DataFrame:
     # Make training set represent each class equally
@@ -49,7 +50,7 @@ def train_test_set() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 def baseline_method(train: pd.DataFrame, test: pd.DataFrame) -> None:
     # Train the model
-    model = LogisticRegression(solver='lbfgs', multi_class='multinomial', max_iter=1000).fit(train.drop(["Class"], axis=1), train['Class'])
+    model = LogisticRegression(solver='liblinear', multi_class='ovr').fit(train.drop(["Class"], axis=1), train['Class'])
 
     # predict the test set class labels and return F2 Score
     pred_y = model.predict(test.drop(['Class'], axis=1))
@@ -58,14 +59,14 @@ def baseline_method(train: pd.DataFrame, test: pd.DataFrame) -> None:
 
 def semi_supervised_method(train_labeled: pd.DataFrame, train_unlabeled: pd.DataFrame, test: pd.DataFrame) -> pd.DataFrame:
     # Use KNN for label propagation
-    label_prop = LabelPropagation(kernel="knn", n_neighbors=20, n_jobs=-1).fit(train_labeled, train_labeled['Class'])
+    label_prop = LabelPropagation(kernel="knn", n_neighbors=N_NEIGHBOURS, n_jobs=-1).fit(train_labeled, train_labeled['Class'])
 
     # Predict the labels of the unlabeled data and add them to the labeled data
     train_unlabeled.assign(Class=label_prop.predict(train_unlabeled))
     train_unlabeled = represent_classes_equally(train_unlabeled)
 
     # Return the now fully labeled dataset
-    return pd.concat([train_labeled, train_unlabeled])
+    return pd.concat([train_labeled, train_unlabeled]), fbeta_score(test["Class"], label_prop.predict(test), beta=1)
 
 
 def main():
@@ -76,23 +77,25 @@ def main():
     f2_base = baseline_method(X_train_labeled, X_test)
 
     # 3 Assign labels to unlabeled set using the semi-supervised method
-    set_with_assigned_labels = semi_supervised_method(X_train_labeled, X_train_unlabeled, X_test)
+    set_with_assigned_labels, f2_label_prop = semi_supervised_method(X_train_labeled, X_train_unlabeled, X_test)
 
     # 4 Run the baseline method on the now fully labeled training dataset
     f2_semi_supervised = baseline_method(set_with_assigned_labels, X_test)
 
     # Return the F2 scores of the baseline method and the semi-supervised method
-    return f2_base, f2_semi_supervised
+    return f2_base, f2_label_prop, f2_semi_supervised
 
 
 if __name__=="__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    f2 = {'base': [], 'semi_supervised': []}
+
+    f2 = {'base': [], 'label_prop': [], 'semi_supervised': []}
     for idx in range(100):
-        f2_base, f2_semi_supervised = main()
+        f2_base, f2_label_prop, f2_semi_supervised = main()
         f2['base'].append(f2_base)
+        f2['label_prop'].append(f2_label_prop)
         f2['semi_supervised'].append(f2_semi_supervised)
-        print(f'\rBase: {np.mean(f2["base"]): .3f}\tSemi: {np.mean(f2["semi_supervised"]): .3f}', end='')
-    
-    print(f'\rF2 baseline: {np.mean(f2["base"])}, {np.std(f2["base"])}')
-    print(f'F2 semi-supervised: {np.mean(f2["semi_supervised"])}, {np.std(f2["semi_supervised"])}')
+        print(f'\r{idx+1}  Base: {f2_base: .3f}  label_prop: {f2_label_prop: .3f}   semi_supervised: {f2_semi_supervised: .3f}', end='')
+
+    write_results(f2)
+    plot_results(f2)
