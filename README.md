@@ -23,3 +23,9 @@ Results are written to the screen and also to the folder data/.
 **Gene Pipeline**
 
 Execute the steps in the notebook
+
+**Task_2**
+Run task_2/task_2.py. Make sure creditcard.csv is in the task_2 folder, so the folder has the following files:
+creditcard.csv
+result_processing.py
+task_2.py
